@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console Appender -->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} | %boldCyan(%-40.-40thread) %red(%25.25X{jda.shard}) %boldGreen(%-25.-25logger{0}) %highlight(%-9level) %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>target/logs/logback.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>target/logs/logback.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <append>false</append> <!-- Append to the log file instead of overwriting -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} | %-40.-40thread %25.25X{jda.shard} %-25.-25logger{0} %-9level %msg%n</pattern>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger Configuration -->
+    <root level="debug">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="file" />
+    </root>
+</configuration>

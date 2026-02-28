@@ -1,0 +1,75 @@
+plugins {
+    id 'com.gradleup.shadow' version '8.3.1'
+    id 'java'
+}
+
+group 'com.wardiusz'
+version '1.0'
+
+apply plugin: "com.github.johnrengelman.shadow"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://m2.dv8tion.net/releases' }
+    maven { url 'https://maven.lavalink.dev/snapshots' }
+    maven { url 'https://jitpack.io' }
+    maven { url "https://maven.lavalink.dev/releases" }
+    maven { url "https://m2.chew.pro/releases" }
+}
+
+dependencies {
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.1'
+
+    //  LavaPlayer
+    implementation 'dev.arbjerg:lavaplayer:2.2.6' //  https://github.com/lavalink-devs/lavaplayer
+//    implementation 'dev.arbjerg:lavaplayer:00d5258dea97b2ca623eaa8e7c251543c4f17b71-SNAPSHOT'
+    implementation 'dev.lavalink.youtube:v2:1.17.0' // https://github.com/lavalink-devs/youtube-source
+    implementation 'dev.lavalink.youtube:common:1.17.0' // https://github.com/lavalink-devs/youtube-source
+    implementation "com.github.topi314.lavasrc:lavasrc:4.8.1"
+
+//    https://github.com/Chew/JDA-Chewtils
+    implementation 'pw.chew:jda-chewtils:2.2.1'
+
+    // JDA
+    // https://mvnrepository.com/artifact/net.dv8tion/JDA
+    implementation("net.dv8tion:JDA:6.3.0") {
+        exclude module: 'opus-java'
+    }
+
+    // JDAVE
+    implementation "club.minnced:jdave-api:0.1.5" // https://github.com/MinnDevelopment/jdave
+    implementation "club.minnced:jdave-native-win-x86-64:0.1.5"
+
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation 'ch.qos.logback:logback-classic:1.5.15'
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    //SQLite
+    implementation 'org.xerial:sqlite-jdbc:3.50.1.0'
+    implementation 'com.zaxxer:HikariCP:6.3.0'
+
+    implementation 'com.github.RealCerus:JGif:1.0.0'
+}
+shadowJar {
+    mergeServiceFiles()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compileClasspath
+                        .filter{ it.exists() }
+                        .collect { it.isDirectory() ? it : zipTree(it) },
+                'Main-Class': 'com.wardiusz.SidorBot.Bot'
+        )
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
