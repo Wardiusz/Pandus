@@ -52,83 +52,124 @@ public class MyDatabase {
             statement.execute("PRAGMA foreign_keys = ON");
 
         //  Table "Guilds"
-            statement.execute("CREATE TABLE IF NOT EXISTS Guilds (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "server BIGINT NOT NULL," +
-                    "prefix VARCHAR(255) NOT NULL DEFAULT '" + Config.get("PREFIX") + "'," +
-                    "bot_role BIGINT NOT NULL," +
-                    "log_channel BIGINT NOT NULL," +
-                    "member_role BIGINT NOT NULL," +
-                    "music_channel BIGINT NOT NULL" +
-                    ");");
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS Guilds (
+                    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server         BIGINT NOT NULL,
+                    prefix         VARCHAR(10) NOT NULL DEFAULT '%s',
+                    active_modules TEXT NOT NULL DEFAULT '{"welcome": false, "goodbye": false, "music": false, "leveling": false, "words_filtering": false, "media_channel_filtering": false}',
+                    bot_role       BIGINT NOT NULL,
+                    log_channel    BIGINT NOT NULL,
+                    member_role    BIGINT NOT NULL,
+                    music_channel  BIGINT NOT NULL,
+                    joined_at      DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime'))
+                );
+            """);
+
+        //  Table "WelcomeConfig"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS WelcomeConfig (
+                    server_id        INTEGER PRIMARY KEY,
+                    enabled          INTEGER NOT NULL DEFAULT 0,
+                    channel_id       BIGINT,
+                    message_template TEXT,
+                    embed_config     TEXT,
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
+
+        //  Table "GoodbyeConfig"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS GoodbyeConfig (
+                    server_id        INTEGER PRIMARY KEY,
+                    enabled          INTEGER NOT NULL DEFAULT 0,
+                    channel_id       BIGINT,
+                    message_template TEXT,
+                    embed_config     TEXT,
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
+
+        // Table "AutomodRules"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS AutomodRules (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id       INTEGER NOT NULL,
+                    rule_type       VARCHAR(50) NOT NULL,
+                    enabled         INTEGER NOT NULL DEFAULT 1,
+                    'action'          VARCHAR(20) NOT NULL DEFAULT 'delete',
+                    action_duration INTEGER,
+                    'options'         TEXT,
+                    exempt_roles    TEXT,
+                    exempt_channels TEXT,
+                    UNIQUE (server_id, rule_type),
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
 
         //  Table "Mutes"
-            statement.execute("CREATE TABLE IF NOT EXISTS Mutes (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "server_id INTEGER NOT NULL," +
-                    "member BIGINT NOT NULL," +
-                    "'admin' BIGINT NOT NULL," +
-                    "reason VARCHAR(255)," +
-                    "cmd_creation DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime'))," +
-                    "cmd_expiration DATETIME NOT NULL " +
-                    "FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE" +
-                    ");");
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS Mutes (
+                    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id      INTEGER NOT NULL,
+                    member         BIGINT NOT NULL,
+                    'admin'          BIGINT NOT NULL,
+                    reason         VARCHAR(255),
+                    cmd_creation   DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
+                    cmd_expiration DATETIME NOT NULL,
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                    );
+                """);
 
         //  Table "Bans"
-            statement.execute("CREATE TABLE IF NOT EXISTS Bans (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "server_id INTEGER NOT NULL," +
-                    "member BIGINT NOT NULL," +
-                    "'admin' BIGINT NOT NULL," +
-                    "reason VARCHAR(255)," +
-                    "cmd_creation DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')) " +
-                    "FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE" +
-                    ");");
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS Bans (
+                    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id    INTEGER NOT NULL,
+                    member       BIGINT NOT NULL,
+                    'admin'      BIGINT NOT NULL,
+                    reason       VARCHAR(255),
+                    cmd_creation DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                    );
+                """);
 
-        //  Table "Ranks"
-            statement.execute("CREATE TABLE IF NOT EXISTS Ranks (" +
-                    "id INTEGER PRIMARY KEY," +
-                    "server_id INTEGER NOT NULL," +
-                    "member BIGINT NOT NULL UNIQUE," +
-                    "xp BIGINT NOT NULL," +
-                    "rank INTEGER NOT NULL " +
-                    "FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE" +
-                    ");");
+        // Table "Ranks"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS LevelingConfig (
+                    server_id        INTEGER PRIMARY KEY,
+                    enabled          INTEGER NOT NULL DEFAULT 0,
+                    levelup_channel  INTEGER,
+                    levelup_message  TEXT,
+                    ignored_channels TEXT,
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
 
-// TODO: Dokończyć podmiankę auto bot role i auto new member role pomiędzy thingies oraz autocommands
-        //  Table "Thingies"
-            statement.execute("CREATE TABLE IF NOT EXISTS Thingies (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "server_id INTEGER NOT NULL," +
-                    "curse_words VARCHAR(255)," +
-                    "welcome_msg VARCHAR(255)," +
-                    "goodbye_msg VARCHAR(255)," +
-                    "use_card VARCHAR(5) NOT NULL," +
-                    "auto_bot_role VARCHAR(255)," +
-                    "auto_new_member_role VARCHAR(255) " +
-                    "FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE" +
-                    ");");
+        // Table "Ranks"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS Ranks (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id   INTEGER NOT NULL UNIQUE,
+                    member      BIGINT NOT NULL,
+                    xp          BIGINT NOT NULL DEFAULT 0,
+                    rank        INTEGER NOT NULL DEFAULT 0,
+                    UNIQUE (server_id, member),
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
 
-        //  Table "AutoCommands"
-            statement.execute("CREATE TABLE IF NOT EXISTS AutoCommands (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "server_id INTEGER NOT NULL," +
-                    "curse_words VARCHAR(255)," +
-                    "del_message VARCHAR(255)," +
-                    "bot_role VARCHAR(255)," +
-                    "new_member_role VARCHAR(255) " +
-                    "FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE" +
-                    ");");
-
-        //  Table "DelMessageCommand"
-            statement.execute("CREATE TABLE IF NOT EXISTS DelMessageCommand (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "autocommand_id INTEGER NOT NULL," +
-                    "del_message VARCHAR(255)," +
-                    "channel VARCHAR(255)," +
-                    "phrase VARCHAR(255) " +
-                    "FOREIGN KEY (autocommand_id) REFERENCES AutoCommands(id) ON DELETE CASCADE" +
-                    ");");
+        //  Table "AutoRoles"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS AutoRoles (
+                    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id INTEGER NOT NULL,
+                    role_id   BIGINT NOT NULL,
+                    'trigger'   VARCHAR(50) NOT NULL DEFAULT 'on_join',
+                    UNIQUE (server_id, role_id, trigger),
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
 
         } catch (SQLException e) {
             LOGGER.error("Error initializing database: {}", e.getMessage());

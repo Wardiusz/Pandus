@@ -101,7 +101,7 @@ public class DBGuilds {
         try (Connection connection = MyDatabase.getConnection()) {
             try (PreparedStatement ps = connection
                     // language=SQLite
-                    .prepareStatement("INSERT INTO bans(server_id, member, admin, reason) VALUES ((SELECT id FROM guilds WHERE server = ?), ?, ?, ?)")) {
+                    .prepareStatement("INSERT INTO Bans(server_id, member, admin, reason) VALUES ((SELECT id FROM guilds WHERE server = ?), ?, ?, ?)")) {
 
                 ps.setString(1, ID);
                 ps.setString(2, member);
@@ -123,7 +123,7 @@ public class DBGuilds {
         try (Connection connection = MyDatabase.getConnection()) {
             try (PreparedStatement ps = connection
                     // language=SQLite
-                    .prepareStatement("DELETE FROM bans WHERE server_id = (SELECT id FROM guilds WHERE server = ?) AND member = ?")) {
+                    .prepareStatement("DELETE FROM Bans WHERE server_id = (SELECT id FROM guilds WHERE server = ?) AND member = ?")) {
 
                 ps.setString(1, ID);
                 ps.setString(2, member);
