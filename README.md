@@ -26,7 +26,7 @@ It supports multi-source music playback (YouTube, Spotify via LavaSrc),
 a SQLite-backed persistence layer with HikariCP connection pooling, 
 and a command framework built on JDA-Chewtils. 
 The source code is published here for transparency and open contribution — 
-the bot itself runs as a hosted instance.
+the bot itself runs as a hosted instance but feel free to private host and use.
 
 ## Demo
 You can test and use bot by adding to your Discord server via [invite link](https://discord.com/oauth2/authorize?client_id=1106275577683529858&permissions=8&scope=bot+applications.commands).
