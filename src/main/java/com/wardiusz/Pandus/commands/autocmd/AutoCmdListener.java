@@ -1,5 +1,6 @@
 package com.wardiusz.Pandus.commands.autocmd;
 
+import com.wardiusz.Pandus.Handler.Config;
 import com.wardiusz.Pandus.Provider;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -16,7 +17,7 @@ public class AutoCmdListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
-        event.getJDA().getPresence().setActivity(Activity.customStatus("/help"));
+        event.getJDA().getPresence().setActivity(Activity.customStatus("Use /help" + (Boolean.parseBoolean(Config.get("PREFIX_COMMANDS")) ? (" or " + Config.get("PREFIX") + "help") : "")));
 
         event.getJDA().addEventListener(
                 new CapsWarningModule(this),
@@ -26,7 +27,6 @@ public class AutoCmdListener extends ListenerAdapter {
                 new OnSelfGuildJoin(this),
                 new OnSelfGuildLeave(this),
                 new VCModule(this),
-                new AutoDelMsgModule(this),
                 new GatekeepSentMsgModule(this)
         );
     }
