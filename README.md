@@ -57,6 +57,13 @@ For general questions, open a [GitHub Issue](https://github.com/wardiusz/Pandus/
 * 1.0
   * Initial release
 
+## Future plans
+* Create bot sharding (currently not required)
+* Add some games like Pokedex, chess etc.
+* Add more functionalities/commands
+* Add language support
+* Create GUI for configuration and managing (Spring Boot App)
+
 ## Contributing
 
 Pull requests are welcome! Feel free to open issues or submit pull requests.
