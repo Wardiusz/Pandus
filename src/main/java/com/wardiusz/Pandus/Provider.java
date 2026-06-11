@@ -12,7 +12,7 @@ import com.wardiusz.Pandus.Handler.Prefix.PrefixExecutor;
 import com.wardiusz.Pandus.Handler.Slash.SlashCommands;
 import com.wardiusz.Pandus.Handler.Slash.SlashExecutor;
 import com.wardiusz.Pandus.commands.DTO.ConfigOptions;
-import com.wardiusz.Pandus.commands.DTO.DBGuilds;
+import com.wardiusz.Pandus.commands.DTO.GuildRepository;
 import com.wardiusz.Pandus.commands.prefix.ShutdownCmd;
 import com.wardiusz.Pandus.commands.slash.administrative.*;
 import com.wardiusz.Pandus.commands.slash.music.*;
@@ -53,7 +53,7 @@ public class Provider {
     private final OnlineStatus status = OnlineStatus.ONLINE;
     private final boolean isMusicBotEnabled = Boolean.parseBoolean(ConfigOptions.MUSIC_BOT.getValue());
 
-    private static DBGuilds[] dbGuilds;
+    private static GuildRepository[] dbGuilds;
 
     public Provider() {
         loadIntents();
@@ -109,11 +109,11 @@ public class Provider {
     }
 
     public static void loadGuildProperties() {
-        dbGuilds = new DBGuilds[jda.getGuilds().size()];
+        dbGuilds = new GuildRepository[jda.getGuilds().size()];
 
         for (int index = 0; index < jda.getGuilds().size(); index++) {
             Guild jdaGuild = jda.getGuilds().get(index);
-            DBGuilds guild = new DBGuilds(jdaGuild.getId());
+            GuildRepository guild = new GuildRepository(jdaGuild.getId());
             dbGuilds[index] = guild;
         }
     }
@@ -293,7 +293,7 @@ public class Provider {
                 .toList());
     }
 
-    public static DBGuilds[] getDbGuilds() {
+    public static GuildRepository[] getDbGuilds() {
         return dbGuilds;
     }
 }

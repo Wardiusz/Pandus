@@ -8,11 +8,11 @@ import java.util.Properties;
 import static com.wardiusz.Pandus.commands.DTO.MyDatabase.LOGGER;
 import static com.wardiusz.Pandus.commands.DTO.MyDatabase.getConnection;
 
-public class DBGuilds {
+public class GuildRepository {
     public final String ID;
     public Properties guildProperties;
 
-    public DBGuilds(String id) {
+    public GuildRepository(String id) {
         this.ID = id;
         fetchProperties();
     }

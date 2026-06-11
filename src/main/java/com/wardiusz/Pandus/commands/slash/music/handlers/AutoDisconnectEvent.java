@@ -2,7 +2,7 @@ package com.wardiusz.Pandus.commands.slash.music.handlers;
 
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.wardiusz.Pandus.Provider;
-import com.wardiusz.Pandus.commands.DTO.DBGuilds;
+import com.wardiusz.Pandus.commands.DTO.GuildRepository;
 import com.wardiusz.Pandus.commands.DTO.GuildOptions;
 import com.wardiusz.Pandus.commands.embeds.EmbedOptions;
 import com.wardiusz.Pandus.commands.slash.music.lavaplayer.GuildMusicManager;
@@ -41,8 +41,8 @@ public class AutoDisconnectEvent extends AudioEventAdapter {
                 gmm.audioPlayer.setPaused(false);
                 guild.getAudioManager().closeAudioConnection();
 
-                Optional<DBGuilds> opt = Arrays.stream(Provider.getDbGuilds())
-                        .filter(dbGuilds -> Objects.equals(dbGuilds.ID, guild.getId()))
+                Optional<GuildRepository> opt = Arrays.stream(Provider.getDbGuilds())
+                        .filter(guildRepository -> Objects.equals(guildRepository.ID, guild.getId()))
                         .findAny();
 
                 String id = opt.get().guildProperties.getProperty(GuildOptions.MUSIC_CHANNEL.name());
