@@ -31,8 +31,8 @@ public class PingCmd extends SlashExecutor {
 //        EmbedBuilder embed = new EmbedBuilder();
 //        embed.setColor(EmbedOptions.NEUTRAL_COLOR);
 //        embed.setAuthor(null);
-//        embed.setTitle("Thanks for using Sidor!");
-//        embed.setDescription("We're delighted that you choose Sidor over other existing bots! To start your journey with Sidor use /help to get a grip what commands you can send! Remember you can also use a custom commands and set a prefix you wanna use! For default is " + Config.get("PREFIX"));
+//        embed.setTitle("Thanks for using Pandus!");
+//        embed.setDescription("We're delighted that you choose Pandus over other existing bots! To start your journey with Pandus use /help to get a grip what commands you can send! Remember you can also use a custom commands and set a prefix you wanna use! For default is " + Config.get("PREFIX"));
 //        event.getGuild().getOwner().getUser().openPrivateChannel().queue(pc -> pc.sendMessageEmbeds(embed.build()).queue());
 
 //        Container container = Container.of(

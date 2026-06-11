@@ -68,7 +68,7 @@ public class PlayCmd extends SlashExecutor {
 
     @Override
     public String getDescription() {
-        return "Play given music. (Makes Sidor join to channel if he's not there)";
+        return "Play given music. (Makes Pandus join to channel if he's not there)";
     }
 
     @Override

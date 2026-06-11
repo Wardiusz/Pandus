@@ -66,6 +66,6 @@ public class LeaveCmd extends SlashExecutor  {
 
     @Override
     public String getDescription() {
-        return "Forces Sidor to leave a channel and clear queue.";
+        return "Forces Pandus to leave a channel and clear queue.";
     }
 }

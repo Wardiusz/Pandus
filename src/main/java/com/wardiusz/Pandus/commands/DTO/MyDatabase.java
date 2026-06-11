@@ -57,7 +57,7 @@ public class MyDatabase {
                     id             INTEGER PRIMARY KEY AUTOINCREMENT,
                     server         BIGINT NOT NULL,
                     prefix         VARCHAR(10) NOT NULL DEFAULT '%s',
-                    active_modules TEXT NOT NULL DEFAULT '{"welcome": false, "goodbye": false, "music": false, "leveling": false, "words_filtering": false, "media_channel_filtering": false}',
+                    active_modules TEXT NOT NULL DEFAULT '{"welcome": false, "goodbye": false, "music": false, "leveling": false, "words_filtering": false, "channel_restrictions": false}',
                     bot_role       BIGINT NOT NULL,
                     log_channel    BIGINT NOT NULL,
                     member_role    BIGINT NOT NULL,
@@ -97,9 +97,38 @@ public class MyDatabase {
                     server_id       INTEGER NOT NULL,
                     rule_type       VARCHAR(50) NOT NULL,
                     enabled         INTEGER NOT NULL DEFAULT 1,
-                    'action'          VARCHAR(20) NOT NULL DEFAULT 'delete',
+                    'action'        VARCHAR(20) NOT NULL DEFAULT 'delete',
                     action_duration INTEGER,
-                    'options'         TEXT,
+                    'options'       TEXT,
+                    exempt_roles    TEXT,
+                    exempt_channels TEXT,
+                    UNIQUE (server_id, rule_type),
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
+
+            // Table "ChannelRestrictions"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS ChannelRestrictions (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id       INTEGER NOT NULL,
+                    channel_id      BIGINT  NOT NULL UNIQUE,
+                    allowed_types   TEXT    NOT NULL,
+                    warn_message    TEXT,
+                    FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
+                );
+            """);
+
+            // Table "AutomodRules"
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS AutomodRules (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    server_id       INTEGER NOT NULL,
+                    rule_type       VARCHAR(50) NOT NULL,
+                    enabled         INTEGER NOT NULL DEFAULT 1,
+                    'action'        VARCHAR(20) NOT NULL DEFAULT 'delete',
+                    action_duration INTEGER,
+                    'options'       TEXT,
                     exempt_roles    TEXT,
                     exempt_channels TEXT,
                     UNIQUE (server_id, rule_type),
@@ -113,10 +142,10 @@ public class MyDatabase {
                     id             INTEGER PRIMARY KEY AUTOINCREMENT,
                     server_id      INTEGER NOT NULL,
                     member         BIGINT NOT NULL,
-                    'admin'          BIGINT NOT NULL,
+                    'admin'        BIGINT NOT NULL,
                     reason         VARCHAR(255),
-                    cmd_creation   DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
-                    cmd_expiration DATETIME NOT NULL,
+                    created_at   DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
+                    expires_at DATETIME NOT NULL,
                     FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
                     );
                 """);
@@ -129,7 +158,7 @@ public class MyDatabase {
                     member       BIGINT NOT NULL,
                     'admin'      BIGINT NOT NULL,
                     reason       VARCHAR(255),
-                    cmd_creation DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
+                    created_at DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP,'localtime')),
                     FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
                     );
                 """);
@@ -165,7 +194,7 @@ public class MyDatabase {
                     id        INTEGER PRIMARY KEY AUTOINCREMENT,
                     server_id INTEGER NOT NULL,
                     role_id   BIGINT NOT NULL,
-                    'trigger'   VARCHAR(50) NOT NULL DEFAULT 'on_join',
+                    'trigger' VARCHAR(50) NOT NULL DEFAULT 'on_join',
                     UNIQUE (server_id, role_id, trigger),
                     FOREIGN KEY (server_id) REFERENCES Guilds(id) ON DELETE CASCADE
                 );

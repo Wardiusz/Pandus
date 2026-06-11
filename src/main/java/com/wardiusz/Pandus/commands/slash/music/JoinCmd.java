@@ -66,6 +66,6 @@ public class JoinCmd extends SlashExecutor {
 
     @Override
     public String getDescription() {
-        return "Makes Sidor join to channel you're currently on.";
+        return "Makes Pandus join to channel you're currently on.";
     }
 }
