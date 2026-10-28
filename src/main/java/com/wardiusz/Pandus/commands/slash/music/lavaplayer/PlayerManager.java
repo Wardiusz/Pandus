@@ -30,6 +30,8 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.wardiusz.Pandus.commands.slash.music.handlers.AutoDisconnectEvent.startAudioTimerIfNotPlaying;
 
@@ -176,8 +178,10 @@ public class PlayerManager {
 
             @Override
             public void loadFailed(FriendlyException exception) {
+                StringBuilder s = new StringBuilder(toUserMessage(extractReason(exception)));
+                s.setCharAt(0, Character.toUpperCase(s.charAt(0)));
                 embed.setColor(EmbedOptions.ERROR_COLOR);
-                embed.setDescription("Problem with loading track has occurred. Try again. " + exception.getMessage());
+                embed.setDescription("Problem with loading track has occurred. Cause: " + s);
                 event.getHook().sendMessageEmbeds(embed.build()).queue();
                 startAudioTimerIfNotPlaying(event.getGuild(), false);
             }
@@ -242,4 +246,45 @@ public class PlayerManager {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
+
+    private static final Pattern CLIENT_FAILURE =
+            Pattern.compile("Client \\[[^\\]]+] failed: (.+)");
+
+    public static String extractReason(Throwable exception) {
+        for (Throwable t = exception; t != null; t = t.getCause()) {
+            Matcher m = CLIENT_FAILURE.matcher(String.valueOf(t.getMessage()));
+
+            if (m.find()) {
+                return m.group(1).trim();
+            }
+        }
+
+        assert exception != null;
+        Throwable[] suppressed = exception.getSuppressed();
+
+        if (suppressed.length > 0 && suppressed[0].getMessage() != null) {
+            return suppressed[0].getMessage();
+        }
+
+        return exception.getMessage();
+    }
+
+    public static String toUserMessage(String reason) {
+        String r = reason.toLowerCase();
+
+        if (r.contains("requires login") || r.contains("sign in") || r.contains("age verification") || r.contains("age-restricted")) {
+            return "this video is age-restricted.";
+        }
+
+        if (r.contains("private")) {
+            return "this video is private.";
+        }
+
+        if (r.contains("unavailable")) {
+            return "this video is unavailable.";
+        }
+
+        return reason;
+    }
+
 }
