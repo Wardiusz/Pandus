@@ -51,7 +51,6 @@ public class AutoDisconnectEvent extends AudioEventAdapter {
                     Objects.requireNonNull(guild.getTextChannelById(id)).sendMessageEmbeds(embed()).queue();
                 } else if (getTempMusicChannel() != null) {
                     Objects.requireNonNull(guild.getTextChannelById(getTempMusicChannel().getId())).sendMessageEmbeds(embed()).queue();
-
                 }
             }, 8, TimeUnit.MINUTES);
         } else {
@@ -62,8 +61,9 @@ public class AutoDisconnectEvent extends AudioEventAdapter {
 
     private static MessageEmbed embed() {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setDescription("Left the voice channel due to inactivity.");
         embedBuilder.setColor(EmbedOptions.NEUTRAL_COLOR);
+        embedBuilder.setDescription("Left the voice channel due to inactivity.");
+
         return embedBuilder.build();
     }
 
