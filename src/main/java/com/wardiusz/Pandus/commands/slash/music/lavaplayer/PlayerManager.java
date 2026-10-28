@@ -42,7 +42,6 @@ public class PlayerManager {
     private final AudioPlayerManager audioPlayerManager;
     private final Provider provider;
     private final int max = 5;
-    List<RestAction<Void>> a = new ArrayList<>();
 
     public PlayerManager(Provider provider) {
         this.musicManagerMap = new HashMap<>();
@@ -70,7 +69,7 @@ public class PlayerManager {
     }
 
     public GuildMusicManager getMusicManager(Guild guild) {
-        return this.musicManagerMap.computeIfAbsent(Long.valueOf(guild.getIdLong()), (guildId) -> {
+        return this.musicManagerMap.computeIfAbsent(guild.getIdLong(), (_) -> {
             final GuildMusicManager guildMusicManager = new GuildMusicManager(this.audioPlayerManager, guild);
 
             guild.getAudioManager().setSendingHandler(guildMusicManager.getSendHandler());
@@ -248,7 +247,7 @@ public class PlayerManager {
     }
 
     private static final Pattern CLIENT_FAILURE =
-            Pattern.compile("Client \\[[^\\]]+] failed: (.+)");
+            Pattern.compile("Client \\[[^]]+] failed: (.+)");
 
     public static String extractReason(Throwable exception) {
         for (Throwable t = exception; t != null; t = t.getCause()) {
